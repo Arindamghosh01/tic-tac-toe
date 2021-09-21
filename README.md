@@ -18,13 +18,22 @@ I took reference from [this](https://www.youtube.com/watch?v=l-hh51ncgDI) wonder
 ## Installation
 ### For Windows
 If you have make utility installed then compile it with
-> make
+~~~~
+make
+~~~~
+
 Or simply compile it with
-> gcc main.cpp -o main.exe
+~~~~
+gcc main.cpp -o main.exe
+~~~~
 
 For Running it use
-> main.exe
+~~~~
+main.exe
+~~~~
 
 ### For Linux and Mac
 Use
-> make && ./main
+~~~~
+make && ./main
+~~~~
