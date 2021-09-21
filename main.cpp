@@ -3,10 +3,12 @@
 #include <iostream>
 #include <cmath>
 #include <array>
-#include <vector>
 #include <set>
+#include <limits>
+#include <random>
 
 #define BOARD_SIZE 3
+
 
 class Game{
 private:
@@ -18,6 +20,7 @@ private:
     void reset () {
         player_turn = 1;
         isEnd = false;
+        difficulty = 1;
         for (auto& i : board)
             i.fill(0);
     }
@@ -64,7 +67,7 @@ private:
             }
         }
 
-        // For Diagonal
+        // For Diagonals
         int dia1 = 0, dia2 = 0;
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
@@ -93,7 +96,7 @@ private:
 
     // Input Pattern for Human understanding :)
     void show_input_pattern() {
-        std::cout << "Choose the position below ...." << '\n';
+        std::cout << "Choose the position from below ...." << '\n';
         for (int i = 0; i < BOARD_SIZE; i++) {
             std::cout << "-------------" << '\n';
             std::cout << '|';
@@ -147,16 +150,109 @@ private:
     }
 
     // Updates the board and next player turn
-    void switch_player(std::pair<int, int> pos) {
+    void switch_player (std::pair<int, int> pos) {
         board[pos.first][pos.second] = player_turn;
         player_turn = player_turn == 1 ? -1 : 1;
     }
 
-    void minimax() {
-        
+    std::pair <int, int> minimax() {
+        int best_score = INT_MAX;
+        std::pair<int, int> action;
+        int level = 0;
+
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                if (board[i][j] == 0) {
+                    board[i][j] = -1;
+
+                    int score = max_search(level);
+
+                    if (score < best_score) {
+                        best_score = score;
+                        action = std::make_pair(i, j);
+                    }
+
+                    board[i][j] = 0;
+                }
+            }
+        }
+
+        return action;
     }
 
+    int max_search(int level) {
+        int win = check_winner();
+        if (isEnd) {
+            isEnd = false;
+            if (win == 1) return 10;
+            else if (win == -1) return -10;
+            else if (win == 0) return 0;
+        }
+
+        int score = INT_MIN;
+
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                if (board[i][j] == 0) {
+                    board[i][j] = 1;
+
+                    score = std::max(score, min_search(level+1) - level);
+
+                    board[i][j] = 0;
+                }
+            }
+        }
+
+        return score;
+    }
+
+    int min_search(int level) {
+        int win = check_winner();
+        if (isEnd) {
+            isEnd = false;
+            if (win == 1) return 10;
+            else if (win == -1) return -10;
+            else if (win == 0) return 0;
+        }
+
+        int score = INT_MAX;
+
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                if (board[i][j] == 0) {
+                    board[i][j] = -1;
+
+                    score = std::min(score, max_search(level+1) + level);
+
+                    board[i][j] = 0;
+                }
+            }
+        }
+
+        return score;
+    }
+
+    std::pair<int, int> random_moves(std::set<std::pair<int, int>> pos) {
+        std::pair<int, int> action;
+
+        std::random_device dev;
+        std::mt19937 rng(dev());
+        std::uniform_int_distribution<std::mt19937::result_type> dist9(0,8);
+
+        while (1) {
+            int idx = dist9(rng);
+            action = std::make_pair(idx / BOARD_SIZE, idx % BOARD_SIZE);
+            if (pos.find(action) != pos.end()) {
+                break;
+            }
+        }
+
+        return action;
+    }
+
+
 public:
+    int difficulty;
     Game() {
         reset();
     }
@@ -171,21 +267,26 @@ public:
 << "            |_______________|" << "\n\n";
 
 
-        show_input_pattern();
-
         // Game Loop
         while (1) {
+            show_input_pattern();
             std::set<std::pair<int, int>> pos = available_positions();
             std::pair<int, int> action = choose_action (pos);
+
+            system("cls");
             switch_player(action);
+
+            std::cout << "It's " << (player_turn == 1 ? "X" : "O")
+                << "'s turn \n";
+
             show_board();
 
             int win = check_winner();
             if (isEnd) {
                 if (win == 1)
-                    std::cout << "Player1 Wins!\n";
+                    std::cout << "X Wins!\n";
                 else if (win == -1)
-                    std::cout << "Player2 Wins!\n";
+                    std::cout << "O Wins!\n";
                 else
                     std::cout << "The Game ends in a tie!\n";
                 break;
@@ -195,12 +296,18 @@ public:
 
     // Play against computer
     void play_against_ai() {
-        show_input_pattern();
+         std::cout
+<< "             _______________" << '\n'
+<< "            |  ___________  |" << '\n'
+<< "            | | TICTACTOE | |" << '\n'
+<< "            | |___________| |" << '\n'
+<< "            |_______________|" << "\n\n";
 
         // Game Loop
         while (1) {
+            show_input_pattern();
             // You'll go first, human should have the advantage coz let's face
-            // it computer can do computation fast :(
+            // it computer can do computation fast
 
             std::set<std::pair<int, int>> pos = available_positions();
             std::pair<int, int> action;
@@ -209,17 +316,25 @@ public:
                 action = choose_action (pos);
             }
             else {
-                minimax();
-                action = choose_action (pos);
+                action = difficulty == 2 ? minimax() : random_moves(pos);
             }
+
+            system("cls");
+
+            std::cout << "Position Choosed By Computer : "
+                    << action.first * BOARD_SIZE + action.second << '\n';
 
             switch_player(action);
             show_board();
 
             int win = check_winner();
             if (isEnd) {
-                if (win == 1)
-                    std::cout << "Let's go Team Human ^_^!\n";
+                if (win == 1) {
+                    difficulty == 2 ?
+                    std::cout << "If you are seeing this you will "
+                        <<"probably fail the turing test XD!\n" :
+                    std::cout << "Well done! You have won the game :)";
+                }
                 else if (win == -1)
                     std::cout << "Computer Wins!\n";
                 else
@@ -234,7 +349,28 @@ public:
 int main() {
     Game tictactoe;
 
-    tictactoe.play();
+    std::cout << "Welcome to game of TIC TAC TOE...\n" <<
+        "Press 1 to Play Against your friend.\n" <<
+        "Press 2 to Play Against Computer.\n";
+
+    int input;
+    std::cin >> input;
+
+    system("cls");
+
+    if (input == 1)
+        tictactoe.play();
+    else if (input == 2) {
+        std::cout << "Choose your difficuilty level  \n"
+            << "1 for Easy \n"
+            << "2 for Hard \n";
+
+        std::cin >> tictactoe.difficulty;
+        system("cls");
+        tictactoe.play_against_ai() ;
+    }
+    else
+        std::cout << "Please choose from given options. \n";
 
     return 0;
 }
