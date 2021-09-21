@@ -260,11 +260,11 @@ public:
     // Game Between Two Humans
     void play() {
         std::cout
-<< "             _______________" << '\n'
-<< "            |  ___________  |" << '\n'
-<< "            | | TICTACTOE | |" << '\n'
-<< "            | |___________| |" << '\n'
-<< "            |_______________|" << "\n\n";
+            << "             _______________" << '\n'
+            << "            |  ___________  |" << '\n'
+            << "            | | TICTACTOE | |" << '\n'
+            << "            | |___________| |" << '\n'
+            << "            |_______________|" << "\n\n";
 
 
         // Game Loop
@@ -297,11 +297,11 @@ public:
     // Play against computer
     void play_against_ai() {
          std::cout
-<< "             _______________" << '\n'
-<< "            |  ___________  |" << '\n'
-<< "            | | TICTACTOE | |" << '\n'
-<< "            | |___________| |" << '\n'
-<< "            |_______________|" << "\n\n";
+            << "             _______________" << '\n'
+            << "            |  ___________  |" << '\n'
+            << "            | | TICTACTOE | |" << '\n'
+            << "            | |___________| |" << '\n'
+            << "            |_______________|" << "\n\n";
 
         // Game Loop
         while (1) {
@@ -349,28 +349,34 @@ public:
 int main() {
     Game tictactoe;
 
-    std::cout << "Welcome to game of TIC TAC TOE...\n" <<
-        "Press 1 to Play Against your friend.\n" <<
-        "Press 2 to Play Against Computer.\n";
+    while (1) {
+        std::cout << "Welcome to game of TIC TAC TOE...\n"
+            << "Press 1 to Play Against your friend.\n"
+            << "Press 2 to Play Against Computer.\n";
 
-    int input;
-    std::cin >> input;
+        int input;
+        std::cin >> input;
 
-    system("cls");
-
-    if (input == 1)
-        tictactoe.play();
-    else if (input == 2) {
-        std::cout << "Choose your difficuilty level  \n"
-            << "1 for Easy \n"
-            << "2 for Hard \n";
-
-        std::cin >> tictactoe.difficulty;
         system("cls");
-        tictactoe.play_against_ai() ;
+
+        if (input == 1) {
+            tictactoe.play();
+            break;
+        }
+        else if (input == 2) {
+            std::cout << "Choose your difficuilty level  \n"
+                << "1 for Easy \n"
+                << "2 for Hard \n";
+
+            std::cin >> tictactoe.difficulty;
+            system("cls");
+            tictactoe.play_against_ai() ;
+            break;
+        }
+        else
+            std::cout << "Please choose from given options. \n";
+        }
     }
-    else
-        std::cout << "Please choose from given options. \n";
 
     return 0;
 }
