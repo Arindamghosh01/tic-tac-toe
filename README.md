@@ -13,3 +13,18 @@ In this code, I've used minimax algorithm to help the computer where to go for t
 
 Minimax is a kind of backtracking algorithm that is used in decision making and game theory to find the optimal move for a player, assuming that your opponent also plays optimally.
 
+I took reference from [this](https://www.youtube.com/watch?v=l-hh51ncgDI) wonderful video resource for minimax algorithm.
+
+## Installation
+### For Windows
+If you have make utility installed then compile it with
+> make
+Or simply compile it with
+> gcc main.cpp -o main.exe
+
+For Running it use
+> main.exe
+
+### For Linux and Mac
+Use
+> make && ./main
