@@ -24,7 +24,7 @@ make
 
 Or simply compile it with
 ~~~~
-gcc main.cpp -o main.exe
+g++ main.cpp -o main.exe
 ~~~~
 
 For Running it use
